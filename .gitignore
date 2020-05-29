@@ -1,0 +1,10 @@
+data
+*.pyc
+.vscode
+__pycache__
+env
+Environments
+Environment
+docstring
+docs/build
+*_env

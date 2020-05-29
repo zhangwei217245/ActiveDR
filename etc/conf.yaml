@@ -1,0 +1,16 @@
+default:
+  server:
+    port: 3000
+  dataset:
+    spider2:
+      raw: /global/cscratch1/sd/wzhang5/data/recsys/spider2_trace/
+      output: /global/cscratch1/sd/wzhang5/data/recsys/file_access/
+    constellation:
+      csv: 
+      raw:
+        users: 
+  neo4j:
+    host: '127.0.0.1'
+    port: 7688
+    user: 'neo4j'
+    pwd: '1234'
