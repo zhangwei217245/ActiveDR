@@ -1,4 +1,4 @@
-
+[![DOI](https://zenodo.org/badge/267735932.svg)](https://zenodo.org/badge/latestdoi/267735932)
 
 # ActiveDR - An Activeness-based Data Retention Action Recommender for HPC Facilities
 
