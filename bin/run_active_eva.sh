@@ -8,9 +8,9 @@
 #SBATCH -t 47:00:00
 
 module load python
-conda activate datarecommender
+conda activate ActiveDR_env
 
-date_array=( $( cat /global/homes/w/wzhang5/software/DataRecommender/bin/2016_dir.txt ) )
+date_array=( $( cat /global/homes/w/wzhang5/software/ActiveDR/bin/2016_dir.txt ) )
 
 for line in "${date_array[@]}"; do
     echo "working on $line"
