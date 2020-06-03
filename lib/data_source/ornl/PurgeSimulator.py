@@ -41,6 +41,7 @@ class PurgePolicySimulator(object):
         self.output_root="/global/cscratch1/sd/wzhang5/data/recsys/purge_result" if (self.function=='reducer' or is_mpi) else "/global/cscratch1/sd/wzhang5/data/recsys/purge_result_2"
         self.date_str = date_str
         self.specified_date_timestamp = date_timestamp
+        self.purge_target = 10000000 / self.size
         self.testing_periods=[7, 30, 60, 90] #if size > 1 else [7]
         self.policies = {}
         self.policies['fixed'] = list(map(lambda l:RetentionPolicyResult("Fixed-Lifetime",l), self.testing_periods))
@@ -96,7 +97,7 @@ class PurgePolicySimulator(object):
             # figure out user identity
             user = User(row.Uid, "") if self.userIDMap[l].get(row.Uid) is None else self.userIDMap[l].get(row.Uid)
             # if user is not None:
-            if self.specified_date_timestamp - time_list[0][1] > self.uaAnalyzers[l].time_spec.job_period_len:
+            if self.policies[p][l].total_mb_removed+file_size < self.purge_target and self.specified_date_timestamp - time_list[0][1] > self.uaAnalyzers[l].time_spec.job_period_len:
                 self.simulate_purge(p, l, row, user, file_size)
             else:
                 self.simulate_retain(p, l, row, user, file_size)
@@ -105,7 +106,7 @@ class PurgePolicySimulator(object):
         p='ares'
         for l in range(0, len(self.testing_periods)):
             user = User(row.Uid, "") if self.userIDMap[l].get(row.Uid) is None else self.userIDMap[l].get(row.Uid)
-            if self.specified_date_timestamp - time_list[0][1] > self.uaAnalyzers[l].time_spec.job_period_len*user.get_lifetime_coefficient():
+            if self.policies[p][l].total_mb_removed+file_size < self.purge_target and self.specified_date_timestamp - time_list[0][1] > self.uaAnalyzers[l].time_spec.job_period_len*user.get_lifetime_coefficient():
                 self.simulate_purge(p,l,row,user,file_size)
             else:
                 self.simulate_retain(p,l,row,user,file_size)
@@ -161,15 +162,15 @@ class PurgePolicySimulator(object):
         if isinstance(OST, str):
             stripe_num = OST.count('|')+1
             if stripe_num == 512: # > 50TB, use 512
-                return self.file_size_rand.randrange(50, 1000) * 1024
+                return self.file_size_rand.randrange(50, 100) * 1024
             elif stripe_num > 4 and stripe_num < 512:  # 1-50 TB, use size/100GB as stripe count
                 return stripe_num * 100
             elif stripe_num == 4: # default : <= 1TB across 4 stripes
                 return stripe_num * stripe_size
             else:
-                return stripe_size/2
+                return stripe_size/4
         else:
-            return stripe_size/2
+            return stripe_size/4
 
     def _on_row(self, row):
         self.total_num_files+=1
