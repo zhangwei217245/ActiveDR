@@ -10,7 +10,9 @@
 module load python
 conda activate ActiveDR_env
 
-cat /global/homes/w/wzhang5/software/ActiveDR/bin/2016_dir.txt | while read line
-do
-    srun -n 40 -c 272 --cpu_bind=cores python -u user_activity_analyzer_mpi.py -d $line
+date_array=( $( cat /global/homes/w/wzhang5/software/ActiveDR/bin/2016_dir.txt ) )
+
+for line in "${date_array[@]}"; do
+    echo "working on $line"
+    srun -n 20 -c 64 --cpu_bind=cores python -u user_activity_analyzer_mpi.py -d $line
 done
