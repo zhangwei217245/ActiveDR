@@ -138,7 +138,9 @@ class PurgePolicySimulator(object):
                 for u in ug:
                     if self.policies[p][l].total_mb_removed+u.size_purged_files[p][l] <= self.purge_target:
                         self.simulate_purge(p, l, u.userID, u, u.num_purged_files[p][l], u.size_purged_files[p][l])
+                        self.simulate_retain(p, l, u.userID, u, u.num_retained_files[p][l], u.size_retained_files[p][l])
                     else:
+                        self.simulate_retain(p, l, u.userID, u, u.num_purged_files[p][l], u.size_purged_files[p][l])
                         self.simulate_retain(p, l, u.userID, u, u.num_retained_files[p][l], u.size_retained_files[p][l])
 
     def output_rst(self):
