@@ -41,7 +41,7 @@ class PurgePolicySimulator(object):
         self.output_root="/global/cscratch1/sd/wzhang5/data/recsys/purge_result" if (self.function=='reducer' or is_mpi) else "/global/cscratch1/sd/wzhang5/data/recsys/purge_result_2"
         self.date_str = date_str
         self.specified_date_timestamp = date_timestamp
-        self.purge_target = 10000000 / self.size
+        self.purge_target = 200000000000 / self.size
         self.testing_periods=[7, 30, 60, 90] #if size > 1 else [7]
         self.policies = {}
         self.policies['fixed'] = list(map(lambda l:RetentionPolicyResult("Fixed-Lifetime",l), self.testing_periods))
@@ -176,7 +176,7 @@ class PurgePolicySimulator(object):
     # guess file size in GB  https://www.olcf.ornl.gov/wp-content/uploads/2016/01/Best-Practices-v6.pdf
     def guess_file_size(self, OST):
         # default : <= 1TB across 4 stripes
-        stripe_size = self.file_size_rand.randrange(1, 1024/4)
+        stripe_size = self.file_size_rand.randrange(1, 256)
         if isinstance(OST, str):
             stripe_num = OST.count('|')+1
             if stripe_num == 512: # > 50TB, use 512
