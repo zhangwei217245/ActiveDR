@@ -379,18 +379,18 @@ class UserActivityAnalyzer(object):
         # divide entire user list as :
         # both active, job active only, pub active only, both inactive
         both_active = list(filter(lambda u:u.is_both_active(), userdict.values()))
-        both_active.sort(reverse=True, key=lambda u:u.get_activeness_tuple())
+        both_active.sort(reverse=False, key=lambda u:u.get_activeness_tuple())
 
         job_active_only = list(filter(lambda u:u.is_job_active_only(), userdict.values()))
-        job_active_only.sort(reverse=True, key=lambda u:u.get_activeness_tuple())
+        job_active_only.sort(reverse=False, key=lambda u:u.get_activeness_tuple())
 
         pub_active_only = list(filter(lambda u:u.is_pub_active_only(), userdict.values()))
-        pub_active_only.sort(reverse=True, key=lambda u:u.get_activeness_tuple())
+        pub_active_only.sort(reverse=False, key=lambda u:u.get_activeness_tuple())
 
         both_inactive = list(filter(lambda u:u.is_both_inactive(), userdict.values()))
         both_inactive.sort(reverse=False, key=lambda u:u.get_activeness_tuple())
 
-        return (both_active, job_active_only, pub_active_only, both_inactive)
+        return (both_inactive, pub_active_only, job_active_only, both_active )
 
     # @profile
     def run(self):

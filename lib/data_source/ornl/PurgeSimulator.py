@@ -71,23 +71,27 @@ class PurgePolicySimulator(object):
         else:
             return 3
 
-    def simulate_purge(self, p, l, row, user, file_size):
-        ua_g=self.__uagroup_id(user)
-        user.num_purged_files[p][l]+=1
+    def add_user_purge(self, p, l, user, num_files, file_size):
+        user.num_purged_files[p][l]+=num_files
         user.size_purged_files[p][l]+=file_size
-        self.policies[p][l].users_whose_files_removed[ua_g][row.Uid]=user
-        self.policies[p][l].num_purged_files_for_4_groups[ua_g]+=1
-        self.policies[p][l].total_num_files_removed+=1
+
+    def add_user_retain(self, p, l, user, num_files, file_size):
+        user.num_retained_files[p][l]+=num_files
+        user.size_retained_files[p][l]+=file_size
+
+    def simulate_purge(self, p, l, Uid, user, num_files, file_size):
+        ua_g=self.__uagroup_id(user)
+        self.policies[p][l].users_whose_files_removed[ua_g][Uid]=user
+        self.policies[p][l].num_purged_files_for_4_groups[ua_g]+=num_files
+        self.policies[p][l].total_num_files_removed+=num_files
         self.policies[p][l].mb_purged_for_4_groups[ua_g]+=file_size
         self.policies[p][l].total_mb_removed+=file_size
 
-    def simulate_retain(self, p, l, row, user, file_size):
+    def simulate_retain(self, p, l, Uid, user, num_files, file_size):
         ua_g=self.__uagroup_id(user)
-        user.num_retained_files[p][l]+=1
-        user.size_retained_files[p][l]+=file_size
-        self.policies[p][l].users_whose_files_protected[ua_g][row.Uid]=user
-        self.policies[p][l].num_retained_files_for_4_groups[ua_g]+=1
-        self.policies[p][l].total_num_files_retained+=1
+        self.policies[p][l].users_whose_files_protected[ua_g][Uid]=user
+        self.policies[p][l].num_retained_files_for_4_groups[ua_g]+=num_files
+        self.policies[p][l].total_num_files_retained+=num_files
         self.policies[p][l].mb_retained_for_4_groups[ua_g]+=file_size
         self.policies[p][l].total_mb_retained+=file_size
 
@@ -98,18 +102,20 @@ class PurgePolicySimulator(object):
             user = User(row.Uid, "") if self.userIDMap[l].get(row.Uid) is None else self.userIDMap[l].get(row.Uid)
             # if user is not None:
             if self.policies[p][l].total_mb_removed+file_size < self.purge_target and self.specified_date_timestamp - time_list[0][1] > self.uaAnalyzers[l].time_spec.job_period_len:
-                self.simulate_purge(p, l, row, user, file_size)
+                self.simulate_purge(p, l, row.Uid, user, 1, file_size)
+                self.add_user_purge(p, l, user, 1, file_size)
             else:
-                self.simulate_retain(p, l, row, user, file_size)
+                self.simulate_retain(p, l, row.Uid, user, 1, file_size)
+                self.add_user_retain(p, l, user, 1, file_size)
 
-    def run_ares_policy(self, time_list, row, file_size):
+    def recommend_ares_retention_action(self, time_list, row, file_size):
         p='ares'
         for l in range(0, len(self.testing_periods)):
             user = User(row.Uid, "") if self.userIDMap[l].get(row.Uid) is None else self.userIDMap[l].get(row.Uid)
-            if self.policies[p][l].total_mb_removed+file_size < self.purge_target and self.specified_date_timestamp - time_list[0][1] > self.uaAnalyzers[l].time_spec.job_period_len*user.get_lifetime_coefficient():
-                self.simulate_purge(p,l,row,user,file_size)
+            if self.specified_date_timestamp - time_list[0][1] > self.uaAnalyzers[l].time_spec.job_period_len*user.get_lifetime_coefficient():
+                self.add_user_purge(p, l, user, 1, file_size)
             else:
-                self.simulate_retain(p,l,row,user,file_size)
+                self.add_user_retain(p, l, user, 1, file_size)
 
     def output_activeness(self):
         if self.rank == 0:
@@ -124,7 +130,19 @@ class PurgePolicySimulator(object):
                         active_tuple[0], active_tuple[1],active_v_tuple[0],active_v_tuple[1],
                         u.is_job_active_match(),u.is_pub_active_match(),scanned))
 
+    def calculate_ares_result(self):
+        p='ares'
+        for l in range(0, len(self.testing_periods)):
+            sorted_users = self.uaAnalyzers[l].get_sorted_user_list_by_activeness(user_dict=self.userIDMap[l])
+            for ug in sorted_users:
+                for u in ug:
+                    if self.policies[p][l].total_mb_removed+u.size_purged_files[p][l] <= self.purge_target:
+                        self.simulate_purge(p, l, u.userID, u, u.num_purged_files[p][l], u.size_purged_files[p][l])
+                    else:
+                        self.simulate_retain(p, l, u.userID, u, u.num_retained_files[p][l], u.size_retained_files[p][l])
+
     def output_rst(self):
+        self.calculate_ares_result()
         for p in ['fixed', 'ares']:
             with open(self.output_root+"/"+self.date_str+"_overall_"+p+"_rank_"+str(self.rank)+".csv", 'wt') as overall_out:
                 overall_out.write("days,total_files,total_purge,total_retain,total_mb_purge,total_mb_retain,"+
@@ -182,7 +200,7 @@ class PurgePolicySimulator(object):
         self.user_ids_scanned_in_spider_trace.add(row.Uid)
 
         self.run_fixed_lifetime_policy(time_list, row, file_size)
-        self.run_ares_policy(time_list, row, file_size)
+        self.recommend_ares_retention_action(time_list, row, file_size)
 
     # dtype={"Atime":int,"Ctime":int,"Mtime":int,
     #         "OST":str,"area":str,"gid":str,"itemsize":int,
