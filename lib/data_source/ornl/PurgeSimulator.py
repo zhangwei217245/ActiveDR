@@ -240,8 +240,8 @@ class PurgePolicySimulator(object):
         start_time_3 = time.time()
         self.output_rst()
         end_time = time.time()
-        print("{}: Activeness Evaluation: {} s, Scanning and Analyzing files {} s, Generating recommendation {} s, Overall {} s"
-            .format(self.date_str, start_time_2-start_time_1, start_time_3-start_time_2, end_time-start_time_3, 
+        print("{}: Rank{}, Activeness Evaluation: {} s, Scanning and Analyzing files {} s, Generating recommendation {} s, Overall {} s"
+            .format(self.date_str, self.rank, start_time_2-start_time_1, start_time_3-start_time_2, end_time-start_time_3, 
             end_time-start_time_1))
 
 
