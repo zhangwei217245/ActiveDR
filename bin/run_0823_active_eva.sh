@@ -5,7 +5,7 @@
 #SBATCH -J user_activity_analyzer
 #SBATCH --mail-user=x-spirit.zhang@ttu.edu
 #SBATCH --mail-type=ALL
-#SBATCH -t 10:00:00
+#SBATCH -t 2:00:00
 
 module load python
 conda activate ActiveDR_env
