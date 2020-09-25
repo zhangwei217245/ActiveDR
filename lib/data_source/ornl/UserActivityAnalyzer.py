@@ -1,6 +1,6 @@
 # Author:  Wei Zhang
 
-import hashlib, sys, os.path
+import os, hashlib, sys, os.path
 import networkx as nx
 import pandas as pd
 import hashlib
@@ -178,14 +178,16 @@ class ActivenessTimeProperties(object):
 
 class ActivityTraceLoader(object):
     
-    def __init__(self):
-        self.user_file_path = "/global/cscratch1/sd/wzhang5/data/recsys/constellation/users-20160530.csv"
-        self.missing_uids_path = "/global/cscratch1/sd/wzhang5/data/recsys/constellation/missing_uids.csv"
-        self.user_node_path = "/global/cscratch1/sd/wzhang5/data/recsys/constellation/node_user.csv"
-        self.job_file_path = "/global/cscratch1/sd/wzhang5/data/recsys/constellation/2013_2016_job.csv"
-        self.job_node_path = "/global/cscratch1/sd/wzhang5/data/recsys/constellation/node_job.csv"
-        self.pub_node_path = "/global/cscratch1/sd/wzhang5/data/recsys/constellation/node_publication.csv"
-        self.edge_written_by_path = "/global/cscratch1/sd/wzhang5/data/recsys/constellation/edge_writtenBy.csv"
+    def __init__(self, trace_base_dir = "/global/cscratch1/sd/wzhang5/data/recsys/constellation"):
+        self.trace_base_dir=trace_base_dir
+        # self.trace_base_dir="/global/cscratch1/sd/wzhang5/data/recsys/constellation"
+        self.user_file_path = self.trace_base_dir+"/users-20160530.csv"
+        self.missing_uids_path = self.trace_base_dir+"/missing_uids.csv"
+        self.user_node_path = self.trace_base_dir+"/node_user.csv"
+        self.job_file_path = self.trace_base_dir+"/2013_2016_job.csv"
+        self.job_node_path = self.trace_base_dir+"/node_job.csv"
+        self.pub_node_path = self.trace_base_dir+"/node_publication.csv"
+        self.edge_written_by_path = self.trace_base_dir+"/edge_writtenBy.csv"
         self.userNameMap={}
         self.userNodeMap={}
         self.pubNodeMap={}
@@ -364,7 +366,7 @@ class UserActivityAnalyzer(object):
                 u.job_active_v = 0.0 if math.isnan(u.job_active_v) else u.job_active_v
                 u.pub_active_v = 0.0 if math.isnan(u.pub_active_v) else u.pub_active_v
             except TypeError:
-                print("rank {} all activeness of {} {} fallback to 0.0 due to TypeError".format(self.rank, u.userID, u.username))
+                # print("rank {} all activeness of {} {} fallback to 0.0 due to TypeError".format(self.rank, u.userID, u.username))
                 u.job_activeness = 0.0
                 u.pub_activeness = 0.0
                 u.job_active_v = 0.0

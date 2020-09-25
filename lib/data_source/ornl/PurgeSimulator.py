@@ -11,7 +11,7 @@ from lib.data_source.csv.CSVReader import CSVReader
 from lib.data_source.ornl.UserActivityAnalyzer import *
 
 class RetentionPolicyResult(object):
-    def __init__(self, policy_name="Dr. Ares", period_days=7):
+    def __init__(self, policy_name="ActiveDR", period_days=7):
         self.period_days = period_days
         self.policy_name = policy_name # or "Fixed-Lifetime"
         self.total_num_files_retained = 0
@@ -46,7 +46,7 @@ class PurgePolicySimulator(object):
         self.testing_periods=[7, 30, 60, 90] #if size > 1 else [7]
         self.policies = {}
         self.policies['fixed'] = list(map(lambda l:RetentionPolicyResult("Fixed-Lifetime",l), self.testing_periods))
-        self.policies['ares'] = list(map(lambda l:RetentionPolicyResult("Dr. Ares",l), self.testing_periods))
+        self.policies['activeDR'] = list(map(lambda l:RetentionPolicyResult("ActiveDR",l), self.testing_periods))
         if self.function == 'sim':
             for i in range(0, self.size):
                 if is_mpi:
@@ -112,8 +112,8 @@ class PurgePolicySimulator(object):
                 self.simulate_retain(p, l, row.Uid, user, 1, file_size)
                 self.add_user_retain(p, l, row.Uid, user, 1, file_size)
 
-    def recommend_ares_retention_action(self, time_list, row, file_size):
-        p='ares'
+    def recommend_activeDR_retention_action(self, time_list, row, file_size):
+        p='activeDR'
         for l in range(0, len(self.testing_periods)):
             user = User(row.Uid, "") if self.userIDMap[l].get(row.Uid) is None else self.userIDMap[l].get(row.Uid)
             if self.specified_date_timestamp - time_list[0][1] > self.uaAnalyzers[l].time_spec.job_period_len*user.get_lifetime_coefficient():
@@ -134,8 +134,8 @@ class PurgePolicySimulator(object):
                         active_tuple[0], active_tuple[1],active_v_tuple[0],active_v_tuple[1],
                         u.is_job_active_match(),u.is_pub_active_match(),scanned))
 
-    def calculate_ares_result(self):
-        p='ares'
+    def calculate_activeDR_result(self):
+        p='activeDR'
         for l in range(0, len(self.testing_periods)):
             sorted_users = self.uaAnalyzers[l].get_sorted_user_list_by_activeness(user_dict=self.userIDMap[l])
             for ug in sorted_users:
@@ -148,8 +148,8 @@ class PurgePolicySimulator(object):
                         self.simulate_retain(p, l, u.userID, u, u.num_retained_files[p][l], u.size_retained_files[p][l])
 
     def output_rst(self):
-        self.calculate_ares_result()
-        for p in ['fixed', 'ares']:
+        self.calculate_activeDR_result()
+        for p in ['fixed', 'activeDR']:
             with open(self.output_root+"/"+self.date_str+"_overall_"+p+"_rank_"+str(self.rank)+".csv", 'wt') as overall_out:
                 overall_out.write("days,total_files,total_purge,total_retain,total_mb_purge,total_mb_retain,"+
                 "fp_both_act,fp_job_act_only,fp_pub_act_only,fp_both_inact,"+
@@ -206,7 +206,7 @@ class PurgePolicySimulator(object):
         self.user_ids_scanned_in_spider_trace.add(row.Uid)
 
         self.run_fixed_lifetime_policy(time_list, row, file_size)
-        self.recommend_ares_retention_action(time_list, row, file_size)
+        self.recommend_activeDR_retention_action(time_list, row, file_size)
 
     # dtype={"Atime":int,"Ctime":int,"Mtime":int,
     #         "OST":str,"area":str,"gid":str,"itemsize":int,
@@ -272,7 +272,7 @@ class PurgePolicySimulator(object):
                 rst_df.to_csv(self.output_root+'/'+date_str+'_user_'+p+'_'+str(plen)+'_reduced.csv', index=False)
 
     def __reduce_overall_result(self, date_str):
-        for p in ['fixed', 'ares']:
+        for p in ['fixed', 'activeDR']:
             print("reducing overall result")
             fn_pattern = date_str+"_overall_"+p+"_rank*.csv"
             print(self.output_root+'/'+fn_pattern)
