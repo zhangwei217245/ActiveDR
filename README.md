@@ -1,8 +1,8 @@
 [![DOI](https://zenodo.org/badge/267735932.svg)](https://zenodo.org/badge/latestdoi/267735932)
 
-# ActiveDR - An Activeness-based Data Retention Action Recommender for HPC Facilities
+# ActiveDR - An Activeness-based Data Retention Solution for HPC Facilities.
 
-This is the implementation of ActiveDR, an Activeness-based Data Retention Action Recommender for HPC Facilities.
+This is the implementation of ActiveDR, an Activeness-based Data Retention Solution for HPC Facilities.
 
 Please notice that our implementation will continue to improve as the project progresses.
 Our implementation is written in python, and we use (or plan to use) the following packages in the program.
@@ -25,12 +25,15 @@ For the rest of the document, we introduce how to install and run our implementa
 
 git clone "https://github.com/zhangwei217245/ActiveDR.git" 
 
-## Build you own conda environment on Cori:
+## Build you own conda environment.
 
-It is highly recommended that you use your own conda environment different than the one that is globally available on Cori. 
+
+It is highly recommended that you use your own conda environment different than the one that is globally available.
 By doing this, you will be able to avoid conflicts between various versions of the packages. 
 
-### 1. load required modules in order to be able to install `mpi4py` in your own conda environment
+If luckily you are working on Cori supercomputing, you may to the following to set up your own conda environment.
+
+### load required modules in order to be able to install `mpi4py` in your own conda environment
 
 As we use `mpi4py` in our project, when installing the package in your own conda environment, it needs to be complied from scratch.
 To ensure that the compilation can be done successfully, you need to load the a series of modules to guarantee a working environment for the compilation.
@@ -45,7 +48,7 @@ module load llvm/10.0.0
 module load python
 ```
 
-### 2. create and switch to your own conda environment.
+### 1. create and switch to your own conda environment.
 
 First, create a conda environment named `ActiveDR_env`
 
@@ -71,7 +74,7 @@ If you need to get back to the original default environment, do the following:
 conda deactivate
 ```
 
-### 3. Installing required packages
+### 2. Installing required packages
 
 First, make sure the conda environment is activated
 
