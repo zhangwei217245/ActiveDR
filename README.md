@@ -1,4 +1,4 @@
-[![DOI](https://zenodo.org/badge/267735932.svg)](https://zenodo.org/badge/latestdoi/267735932)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4663526.svg)](https://doi.org/10.5281/zenodo.4663526)
 
 # ActiveDR - An Activeness-based Data Retention Solution for HPC Facilities.
 
