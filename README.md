@@ -94,12 +94,50 @@ Now, you can install required packages:
 pip install -r requirements.txt
 ```
 
+## Run a single process of this program on a local machine for demo purpose
+
+### Download demo dataset from specified http address
+
+```bash
+
+```
+
+### Extract the dataset into a directory under `${PROJECT_HOME}/data`
+
+* Note： `${PROJECT_HOME}` is where your local copy of this code repo is.
+
+```bash
+
+```
+### Run demo
+
+```bash
+cd ${PROJECT_HOME}/bin
+nohup python -u user_activity_analyzer.py -m local -d 20160823 > nohup.out 2>&1 &
+```
+
 ## Run a single process of this program
 
 ```bash
 cd bin
 nohup python -u user_activity_analyzer.py -d 20160823 > nohup.out 2>&1 &
 ```
+
+### Check demo output
+```bash
+cat ${PROJECT_HOME}/nohup.out
+ls -al ${PROJECT_HOME}/data/purge_result_2
+```
+
+## Run a single process on HPC environment
+
+
+```bash
+cd ${PROJECT_HOME}/bin
+nohup python -u user_activity_analyzer.py -d 20160823 > nohup.out 2>&1 &
+```
+
+* Note: The default value of argument `-m` is `hpc`, which refers to HPC environment. 
 
 ## Run with MPI support on multiple KNL computing nodes
 

@@ -21,7 +21,7 @@ def process_console_args():
 def main():
     args = process_console_args()
 
-    activity_trace_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/data/ornl/constellation"
+    activity_trace_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/data"
     actTraceLoader = ActivityTraceLoader(trace_base_dir=activity_trace_dir)
 
     policy = None

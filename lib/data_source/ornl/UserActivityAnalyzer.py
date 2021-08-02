@@ -110,10 +110,10 @@ class User(object):
         self.pub_active_v = 0.0
         self.job_active_v = 0.0
         self.active_v = (self.job_active_v, self.pub_active_v)
-        self.num_purged_files = {'fixed':[0, 0, 0, 0], 'ares':[0, 0, 0, 0]}
-        self.num_retained_files = {'fixed':[0, 0, 0, 0], 'ares':[0, 0, 0, 0]}
-        self.size_purged_files = {'fixed':[0, 0, 0, 0], 'ares':[0, 0, 0, 0]}
-        self.size_retained_files = {'fixed':[0, 0, 0, 0], 'ares':[0, 0, 0, 0]}
+        self.num_purged_files = {'fixed':[0, 0, 0, 0], 'activeDR':[0, 0, 0, 0]}
+        self.num_retained_files = {'fixed':[0, 0, 0, 0], 'activeDR':[0, 0, 0, 0]}
+        self.size_purged_files = {'fixed':[0, 0, 0, 0], 'activeDR':[0, 0, 0, 0]}
+        self.size_retained_files = {'fixed':[0, 0, 0, 0], 'activeDR':[0, 0, 0, 0]}
     
     def set_node_id(self, node_id):
         self.node_id = node_id
@@ -178,8 +178,8 @@ class ActivenessTimeProperties(object):
 
 class ActivityTraceLoader(object):
     
-    def __init__(self, trace_base_dir = "/global/cscratch1/sd/wzhang5/data/recsys/constellation"):
-        self.trace_base_dir=trace_base_dir
+    def __init__(self, trace_base_dir = "/global/cscratch1/sd/wzhang5/data/recsys"):
+        self.trace_base_dir=trace_base_dir + "/constellation"
         # self.trace_base_dir="/global/cscratch1/sd/wzhang5/data/recsys/constellation"
         self.user_file_path = self.trace_base_dir+"/users-20160530.csv"
         self.missing_uids_path = self.trace_base_dir+"/missing_uids.csv"
@@ -396,5 +396,4 @@ class UserActivityAnalyzer(object):
 
     # @profile
     def run(self):
-        print("start analysis...")
         return (self.analyze_activeness(), self.get_sorted_user_list_by_activeness())

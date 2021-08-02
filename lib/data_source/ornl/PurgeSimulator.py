@@ -27,19 +27,19 @@ class RetentionPolicyResult(object):
 
 class PurgePolicySimulator(object):
     
-    def __init__(self, rank, size, date_str, date_timestamp, is_mpi, function='sim'):
-        self.monitored_init(rank, size, date_str, date_timestamp, is_mpi, function)
+    def __init__(self, rank, size, date_str, date_timestamp, is_mpi, data_base_dir, function='sim'):
+        self.monitored_init(rank, size, date_str, date_timestamp, is_mpi, data_base_dir, function)
 
     # @profile
-    def monitored_init(self, rank, size, date_str, date_timestamp, is_mpi, function='sim'):
+    def monitored_init(self, rank, size, date_str, date_timestamp, is_mpi, data_base_dir, function='sim'):
         self.rank = rank
         self.size = size
         self.function = function
         if is_mpi:
             from mpi4py import MPI
         self.file_size_rand = Random(x=5)
-        self.spider_trace_root_path = "/global/cscratch1/sd/wzhang5/data/recsys/spider2_trace"
-        self.output_root="/global/cscratch1/sd/wzhang5/data/recsys/purge_result" if (self.function=='reducer' or is_mpi) else "/global/cscratch1/sd/wzhang5/data/recsys/purge_result_2"
+        self.spider_trace_root_path = data_base_dir + "/spider2_trace"
+        self.output_root= data_base_dir + ("/purge_result" if (function=='reducer') else "/purge_result_2")
         self.date_str = date_str
         self.specified_date_timestamp = date_timestamp
         self.purge_target = 200000000000 / self.size
@@ -52,7 +52,8 @@ class PurgePolicySimulator(object):
                 if is_mpi:
                     MPI.COMM_WORLD.Barrier()
                 if i == rank:
-                    self.activity_data = ActivityTraceLoader().load_activity_data()
+                    self.activity_data = ActivityTraceLoader(data_base_dir).load_activity_data()
+                    print("start analysis...")
                     self.uaAnalyzers = list(map(lambda l:UserActivityAnalyzer(self.rank, self.size, self.activity_data, date_timestamp, l), self.testing_periods))
                     self.userIDMap = list(map(lambda a:a.run()[0], self.uaAnalyzers))
 
