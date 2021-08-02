@@ -9,3 +9,4 @@ Environment
 docstring
 docs/build
 *_env
+*.tar.gz

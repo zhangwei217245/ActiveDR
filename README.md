@@ -98,17 +98,21 @@ pip install -r requirements.txt
 
 ### Download demo dataset from specified http address
 
-```bash
+Please click the DOI link below to get request access to the demo dataset:
 
-```
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5152773.svg)](https://doi.org/10.5281/zenodo.5152773)
+
+Once you download the `data_mintar.gz` file, put it in `${PROJECT_HOME}`. 
+* Note： `${PROJECT_HOME}` is where your local copy of this code repo is.
 
 ### Extract the dataset into a directory under `${PROJECT_HOME}/data`
 
-* Note： `${PROJECT_HOME}` is where your local copy of this code repo is.
 
 ```bash
-
+tar zxvf data_min.tar.gz
 ```
+
+This should create directory `${PROJECT_HOME}/data` and put all the dataset necessary in it.
 ### Run demo
 
 ```bash

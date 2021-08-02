@@ -215,9 +215,9 @@ class ActiveDR(object):
         return
                         
 class LightweightPurgeSimulator(object):
-    def __init__(self, purge_policy):
-        self.applog_base = "/Users/zhangwei/Downloads/RecSystem/log-data-study"
-        self.output_dir = "/Users/zhangwei/Downloads/RecSystem/log-data-study/output"
+    def __init__(self, purge_policy, logbase=""):
+        self.applog_base = logbase
+        self.output_dir = logbase+"/output"
         self.purge_date_file = ""
         self.trie=dict()
         self.years=[ 2015, 2016 ]

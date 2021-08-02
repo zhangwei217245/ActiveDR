@@ -31,7 +31,7 @@ def main():
         policy = Fixed_Purge_Policy(activity_trace_loader=actTraceLoader, lifetime=int(args.lifetime))
 
     if policy is not None:
-        simulator = LightweightPurgeSimulator(purge_policy=policy)
+        simulator = LightweightPurgeSimulator(purge_policy=policy, logbase=activity_trace_dir+"/log_study")
         simulator.simulate_2_year()
 
         for i in range(len(simulator.important_miss_ratios)-1):
